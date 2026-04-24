@@ -1,0 +1,241 @@
+<div class="min-h-screen bg-base-200 p-4 md:p-8">
+    <div class="mx-auto w-full max-w-4xl">
+        <div class="card border border-base-300 bg-base-100 shadow-xl">
+            <div class="card-body gap-6">
+                <div>
+                    <h1 class="text-3xl font-bold">Formulário com Reactive Forms</h1>
+                    <p class="text-base-content/70">Preencha os dados e gerencie os telefones adicionados.</p>
+                </div>
+
+                <form [formGroup]="formulario" (ngSubmit)="enviar()" class="grid gap-5">
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <label class="form-control w-full">
+                            <span class="label-text mb-1">Nome completo *</span>
+                            <input
+                                type="text"
+                                id="nome"
+                                class="input input-bordered w-full"
+                                placeholder="Digite seu nome"
+                                formControlName="nome"
+                            />
+                            @if (mostrarErro('nome', 'required')) {
+                                <span class="label-text-alt text-error">O nome está inválido.</span>
+                            }
+                            @if (mostrarErro('nome', 'minlength')) {
+                                <span class="label-text-alt text-error">O nome deve ter no mínimo 3 caracteres.</span>
+                            }
+                        </label>
+
+                        <label class="form-control w-full">
+                            <span class="label-text mb-1">E-mail *</span>
+                            <input
+                                type="email"
+                                id="email"
+                                class="input input-bordered w-full"
+                                placeholder="exemplo@email.com"
+                                formControlName="email"
+                            />
+                            @if (mostrarErro('email', 'required')) {
+                                <span class="label-text-alt text-error">O e-mail está inválido.</span>
+                            }
+                            @if (mostrarErro('email', 'email')) {
+                                <span class="label-text-alt text-error">Digite um e-mail válido.</span>
+                            }
+                        </label>
+                    </div>
+
+                    <div class="rounded-box border border-base-300 p-4">
+                        <h2 class="mb-3 text-lg font-semibold">Telefones</h2>
+
+                        <div class="grid gap-3 md:grid-cols-[1fr_auto]">
+                            <label class="form-control w-full">
+                                <span class="label-text mb-1">Telefone *</span>
+                                <input
+                                    type="text"
+                                    id="novoTelefone"
+                                    class="input input-bordered w-full"
+                                    placeholder="(27) 99999-9999"
+                                    formControlName="novoTelefone"
+                                />
+                            </label>
+
+                            <button type="button" (click)="addTelefone()" class="btn btn-primary self-end">
+                                Adicionar
+                            </button>
+                        </div>
+
+                        @if (mostrarErroTelefones()) {
+                            <span class="label-text-alt text-error">Adicione pelo menos um telefone.</span>
+                        }
+
+                        <div class="mt-4 overflow-x-auto">
+                            <table class="table table-zebra">
+                                <thead>
+                                    <tr>
+                                        
+                                        <th>Telefone</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for(telefone of telefones.controls; track $index) {
+                                        <tr>
+                                            <td>{{ telefone.value }}</td>
+                                            <td>
+                                                <button
+                                                    type="button"
+                                                    (click)="removerTelefone($index)"
+                                                    class="btn btn-sm btn-error btn-outline"
+                                                >
+                                                    Remover
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <label class="form-control w-full">
+                            <span class="label-text mb-1">Idade *</span>
+                            <input
+                                type="number"
+                                id="idade"
+                                class="input input-bordered w-full"
+                                placeholder="Sua idade"
+                                formControlName="idade"
+                            />
+                            @if (mostrarErro('idade', 'required')) {
+                                <span class="label-text-alt text-error">Idade é obrigatória.</span>
+                            }
+                            @if (mostrarErro('idade', 'min')) {
+                                <span class="label-text-alt text-error">A idade mínima é 18 anos.</span>
+                            }
+                        </label>
+
+                        <label class="form-control w-full">
+                            <span class="label-text mb-1">Cidade *</span>
+                            <select name="cidade" id="cidade" class="select select-bordered w-full" formControlName="cidade">
+                                <option value="" disabled>Selecione uma cidade</option>
+                                <option value="Colatina">Colatina</option>
+                                <option value="Marilândia">Marilândia</option>
+                                <option value="Linhares">Linhares</option>
+                                <option value="Vitória">Vitória</option>
+                                <option value="Serra">Serra</option>
+                                <option value="Outra">Outra</option>
+                            </select>
+                            @if (mostrarErro('cidade', 'required')) {
+                                <span class="label-text-alt text-error">Cidade é obrigatória.</span>
+                            }
+                        </label>
+                    </div>
+
+                    <div class="rounded-box border border-base-300 p-4">
+                        <span class="label-text mb-2 block font-medium">Gênero *</span>
+                        <div class="flex flex-wrap gap-4">
+                            <label class="label cursor-pointer gap-2">
+                                <input
+                                    type="radio"
+                                    id="masc"
+                                    name="genero"
+                                    value="masculino"
+                                    class="radio radio-primary"
+                                    formControlName="genero"
+                                />
+                                <span class="label-text">Masculino</span>
+                            </label>
+                            <label class="label cursor-pointer gap-2">
+                                <input
+                                    type="radio"
+                                    id="fem"
+                                    name="genero"
+                                    value="feminino"
+                                    class="radio radio-primary"
+                                    formControlName="genero"
+                                />
+                                <span class="label-text">Feminino</span>
+                            </label>
+                            <label class="label cursor-pointer gap-2">
+                                <input
+                                    type="radio"
+                                    id="outro"
+                                    name="genero"
+                                    value="outro"
+                                    class="radio radio-primary"
+                                    formControlName="genero"
+                                />
+                                <span class="label-text">Outro</span>
+                            </label>
+                        </div>
+                        @if (mostrarErro('genero', 'required')) {
+                            <span class="label-text-alt text-error">Gênero é obrigatório.</span>
+                        }
+                    </div>
+
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <label class="form-control w-full">
+                            <span class="label-text mb-1">Senha *</span>
+                            <input type="password" id="senha" class="input input-bordered w-full" formControlName="senha" />
+                            @if (mostrarErro('senha', 'required')) {
+                                <span class="label-text-alt text-error">Senha é obrigatória.</span>
+                            }
+                            @if (mostrarErro('senha', 'minlength')) {
+                                <span class="label-text-alt text-error">A senha deve ter no mínimo 6 caracteres.</span>
+                            }
+                        </label>
+
+                        <label class="form-control w-full">
+                            <span class="label-text mb-1">Confirmar senha *</span>
+                            <input type="password" id="confSenha" class="input input-bordered w-full" formControlName="confSenha" />
+                            @if (mostrarErro('confSenha', 'required')) {
+                                <span class="label-text-alt text-error">Confirmação da senha é obrigatória.</span>
+                            }
+                            @if (mostrarErroSenhas()) {
+                                <span class="label-text-alt text-error">As senhas não coincidem.</span>
+                            }
+                        </label>
+                    </div>
+
+                    <label class="label cursor-pointer justify-start gap-3 rounded-box border border-base-300 p-4">
+                        <input type="checkbox" class="checkbox checkbox-primary" formControlName="termos" />
+                        <span class="label-text">Aceito os termos de uso *</span>
+                    </label>
+                    @if (mostrarErro('termos', 'required')) {
+                        <span class="label-text-alt text-error">Você deve aceitar os termos para continuar.</span>
+                    }
+
+                    <div class="card-actions justify-end">
+                        <button type="submit" class="btn btn-success" [disabled]="!podeCadastrar">Cadastrar</button>
+                    </div>
+                </form>
+
+                @if (dadosCadastrados) {
+                    <div class="modal" [class.modal-open]="modalAberto">
+                        <div class="modal-box">
+                            <h2 class="mb-3 text-xl font-bold">Cadastro realizado com sucesso</h2>
+                            <p><span class="font-semibold">Nome:</span> {{ dadosCadastrados.nome }}</p>
+                            <p><span class="font-semibold">E-mail:</span> {{ dadosCadastrados.email }}</p>
+                            <p><span class="font-semibold">Idade:</span> {{ dadosCadastrados.idade }}</p>
+                            <p><span class="font-semibold">Gênero:</span> {{ dadosCadastrados.genero }}</p>
+                            <p><span class="font-semibold">Cidade:</span> {{ dadosCadastrados.cidade }}</p>
+                            <div class="mt-2">
+                                <span class="font-semibold">Telefones:</span>
+                                <ul class="ml-5 list-disc">
+                                    @for (telefone of dadosCadastrados.telefones; track $index) {
+                                        <li>{{ telefone }}</li>
+                                    }
+                                </ul>
+                            </div>
+                            <div class="modal-action">
+                                <button type="button" class="btn" (click)="fecharModal()">Fechar</button>
+                            </div>
+                        </div>
+                        <button type="button" class="modal-backdrop" (click)="fecharModal()" aria-label="Fechar modal"></button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
